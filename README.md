@@ -1,161 +1,50 @@
-# سمپل نیتیو اندروید PushPanel (Android Studio)
+# PushPanel Android Sample
 
-اپ سمپل اتصال کتابخانه PushPanel به پروژه نیتیو اندروید.
+Sample app for the PushPanel SDK: `ir.push-panel:push-sdk:1.7.2`.
 
-کتابخانه: `ir.push-panel:push-sdk:1.7.2` از MavenCentral
+It shows the minimal integration — init the SDK and listen for events.
 
-## ساختار پروژه
+## Setup
 
-```
-├── app/
-│   ├── google-services.json.example   # قالب فایل فایربیس (فایل واقعی git-ignored است)
-│   └── src/main/
-│       ├── AndroidManifest.xml
-│       ├── java/com/pushpanel/test/
-│       │   ├── SampleApplication.kt   # مقداردهی اولیه SDK
-│       │   └── MainActivity.kt        # درخواست دسترسی + init + نمایش لاگ رویدادها
-│       └── res/layout/activity_main.xml
-├── build.gradle.kts                   # پلاگین‌ها (شامل google-services)
-├── settings.gradle.kts
-└── app/build.gradle.kts               # دیپندنسی ir.push-panel:push-sdk:1.7.2
+1. Create a Firebase project and download `google-services.json` for the
+   package `com.pushpanel.test`.
+   (A blank template lives at `app/google-services.json.example` —
+   the real file is git-ignored on purpose.)
+2. Copy it to `app/google-services.json`.
+3. Sync & run:
+
+```bash
+./gradlew :app:assembleDebug
 ```
 
-## ۱. گریدل
+## What the sample shows
 
-`settings.gradle.kts` — داخل `dependencyResolutionManagement`:
+- `SampleApplication.kt` — one-line init:
+  ```kotlin
+  PushSdk.init(this, PushSdkConfig(debug = true))
+  ```
+- `MainActivity.kt`
+  - Event listener (`PushSdk.addListener` → `onMessageReceived`,
+    `onSilentMessage`, `onTokenRefreshed`)
+  - Event log view.
+
+## Dependency
 
 ```kotlin
-repositories {
-    google()
-    mavenCentral()
-}
-```
-
-`app/build.gradle.kts` — انتهای فایل:
-
-```kotlin
+// app/build.gradle.kts
 dependencies {
     implementation("ir.push-panel:push-sdk:1.7.2")
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
 }
 ```
 
-## ۲. مقداردهی اولیه — کاتلین
+> Android 13+ needs the `POST_NOTIFICATIONS` runtime permission —
+> the sample requests it on launch.
 
-`SampleApplication.kt` — یک خط کافیست:
+## Notes
 
-```kotlin
-PushSdk.init(this, PushSdkConfig(debug = true))
-```
-
-`MainActivity.kt` — درخواست دسترسی نوتیفیکیشن (اندروید ۱۳+) و گوش دادن به رویدادها:
-
-```kotlin
-package com.pushpanel.test
-
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import ir.pushpanel.sdk.PushSdk
-
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        requestNotificationPermission()
-        PushSdk.init(this)
-    }
-
-    private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 100)
-            }
-        }
-    }
-}
-```
-
-## ۳. مین‌اکتیویتی — جاوا
-
-```java
-package com.pushpanel.test;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import ir.pushpanel.sdk.PushSdk;
-
-public class MainActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        requestNotificationPermission();
-        PushSdk.init(this);
-    }
-
-    private void requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 100);
-            }
-        }
-    }
-}
-```
-
-## ۴. دسترسی‌ها و منیفست
-
-`app/src/main/AndroidManifest.xml` — بعد از `<manifest>`:
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-```
-
-## ۵. فایربیس (برای دریافت واقعی پوش — اجباری)
-
-بدون این مرحله `google-services.json` نادیده گرفته می‌شود، توکن FCM ساخته نمی‌شود و پوشی دریافت نمی‌کنی (بیلد موفق می‌شود ولی خبری از پوش نیست).
-
-۱. فایل `google-services.json` را در پوشه `app/` بگذار؛ `package_name` داخل آن باید برابر `applicationId` برنامه (`com.pushpanel.test`) باشد.
-(قالب خالی در `app/google-services.json.example` هست — فایل واقعی در گیت کامیت نمی‌شود.)
-
-۲. در `build.gradle.kts` ریشه داخل بلاک `plugins` این خط را اضافه کن:
-
-```kotlin
-plugins {
-    id("com.android.application") version "8.7.3" apply false
-    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
-    id("com.google.gms.google-services") version "4.4.2" apply false
-}
-```
-
-۳. در `app/build.gradle.kts` داخل بلاک `plugins` این خط را اضافه کن:
-
-```kotlin
-plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.gms.google-services")
-}
-```
-
-۴. برای اطمینان بعد از بیلد، این فایل باید تولید شده باشد و شامل `google_app_id` باشد:
-
-```
-app/build/generated/res/google-services/debug/values/values.xml
-```
-
-## ۶. بیلد
-
-```powershell
-./gradlew assembleDebug
-```
-
-## نکات
-
-- برای دیدن لاگ‌های SDK در Logcat با `SampleApp`، `PushSDK` یا `PushPanel` فیلتر کن.
+- `PushSdkConfig.serverUrl` defaults to `https://push-panel.ir/api/v1`.
+- Keep `autoRegisterToken = false` unless your panel app has the
+  `token_delivery` permission; FCM topic subscriptions work regardless.
+- Filter Logcat by `SampleApp`, `PushSDK` or `PushPanel` to see SDK logs.
