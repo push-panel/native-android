@@ -158,6 +158,4 @@ app/build/generated/res/google-services/debug/values/values.xml
 
 ## نکات
 
-- `PushSdkConfig.serverUrl` به‌صورت پیش‌فرض `https://push-panel.ir/api/v1` است.
-- `autoRegisterToken = false` نگه دار، مگر اینکه اپ پنل تو دسترسی `token_delivery` داشته باشد.
 - برای دیدن لاگ‌های SDK در Logcat با `SampleApp`، `PushSDK` یا `PushPanel` فیلتر کن.
