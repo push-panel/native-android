@@ -10,7 +10,7 @@ class SampleApplication : Application() {
 
         // Minimal setup: one line is enough.
         // serverUrl defaults to https://push-panel.ir/api/v1
-        // debug = true prints SDK logs (Logcat tag: PushSDK / PushPanel).
+        // debug = true prints SDK logs (Logcat tag: PushPanel).
         PushPanel.init(
             this,
             true)

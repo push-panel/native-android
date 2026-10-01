@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="ir.push-panel:push-sdk:1.7.2"
+            android:text="ir.push-panel:push-sdk:1.8.3"
             android:textSize="12sp"
             android:textColor="#616161" />
 

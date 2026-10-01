@@ -2,7 +2,7 @@
 
 اپ سمپل اتصال کتابخانه PushPanel به پروژه نیتیو اندروید.
 
-کتابخانه: `ir.push-panel:push-sdk:1.7.2` از MavenCentral
+کتابخانه: `ir.push-panel:push-sdk:1.8.3` از MavenCentral
 
 ## ساختار پروژه
 
@@ -17,7 +17,7 @@
 │       └── res/layout/activity_main.xml
 ├── build.gradle.kts                   # پلاگین‌ها (شامل google-services)
 ├── settings.gradle.kts
-└── app/build.gradle.kts               # دیپندنسی ir.push-panel:push-sdk:1.7.2
+└── app/build.gradle.kts               # دیپندنسی ir.push-panel:push-sdk:1.8.3
 ```
 
 ## ۱. گریدل
@@ -35,7 +35,7 @@ repositories {
 
 ```kotlin
 dependencies {
-    implementation("ir.push-panel:push-sdk:1.7.2")
+    implementation("ir.push-panel:push-sdk:1.8.3")
 }
 ```
 
@@ -44,10 +44,10 @@ dependencies {
 `SampleApplication.kt` — یک خط کافیست:
 
 ```kotlin
-PushSdk.init(this, PushSdkConfig(debug = true))
+PushPanel.init(this, true) // دیباگ فعال؛ برای غیرفعال: PushPanel.init(this)
 ```
 
-`MainActivity.kt` — درخواست دسترسی نوتیفیکیشن (اندروید ۱۳+) و گوش دادن به رویدادها:
+`MainActivity.kt` — پیاده‌سازی `PushSdkListener`، ثبت لیسنر، نمایش وضعیت و درخواست دسترسی نوتیفیکیشن (اندروید ۱۳+):
 
 ```kotlin
 package com.pushpanel.test
@@ -57,15 +57,26 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import ir.pushpanel.sdk.PushSdk
+import ir.pushpanel.sdk.PushPanel
+import ir.pushpanel.sdk.PushPayload
+import ir.pushpanel.sdk.PushSdkListener
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PushSdkListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         requestNotificationPermission()
-        PushSdk.init(this)
+        PushPanel.addListener(this)
     }
+
+    override fun onDestroy() {
+        PushPanel.removeListener(this)
+        super.onDestroy()
+    }
+
+    override fun onMessageReceived(payload: PushPayload) { /* ... */ }
+    override fun onSilentMessage(payload: PushPayload) { /* ... */ }
+    override fun onTokenRefreshed(token: String) { /* ... */ }
 
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -87,15 +98,22 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import ir.pushpanel.sdk.PushSdk;
+import ir.pushpanel.sdk.PushPanel;
+import ir.pushpanel.sdk.PushSdkListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PushSdkListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         requestNotificationPermission();
-        PushSdk.init(this);
+        PushPanel.addListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        PushPanel.removeListener(this);
+        super.onDestroy();
     }
 
     private void requestNotificationPermission() {
@@ -158,4 +176,4 @@ app/build/generated/res/google-services/debug/values/values.xml
 
 ## نکات
 
-- برای دیدن لاگ‌های SDK در Logcat با `SampleApp`، `PushSDK` یا `PushPanel` فیلتر کن.
+- برای دیدن لاگ‌های SDK در Logcat با تگ `PushPanel`، و لاگ‌های اپ سمپل با تگ `SampleApp` فیلتر کن.

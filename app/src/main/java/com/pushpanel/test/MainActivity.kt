@@ -20,7 +20,7 @@ import java.util.Locale
  * Sample screen for the PushPanel SDK (`ir.push-panel:push-sdk:1.8.3`).
  *
  * Shows the minimal integration:
- *  1. [SampleApplication] calls `PushSdk.init()` once.
+ *  1. [SampleApplication] calls `PushPanel.init()` once.
  *  2. This activity listens for SDK events and shows them in a log.
  */
 class MainActivity : AppCompatActivity(), PushSdkListener {
