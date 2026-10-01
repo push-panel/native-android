@@ -8,15 +8,16 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import ir.pushpanel.sdk.PushPanel
 import ir.pushpanel.sdk.PushPayload
-import ir.pushpanel.sdk.PushSdk
+
 import ir.pushpanel.sdk.PushSdkListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 /**
- * Sample screen for the PushPanel SDK (`ir.push-panel:push-sdk:1.7.2`).
+ * Sample screen for the PushPanel SDK (`ir.push-panel:push-sdk:1.8.3`).
  *
  * Shows the minimal integration:
  *  1. [SampleApplication] calls `PushSdk.init()` once.
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity(), PushSdkListener {
         logText = findViewById(R.id.logText)
 
         requestNotificationPermission()
-        PushSdk.addListener(this)
+        PushPanel.addListener(this)
 
         updateStatus()
 
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity(), PushSdkListener {
     }
 
     override fun onDestroy() {
-        PushSdk.removeListener(this)
+        PushPanel.removeListener(this)
         super.onDestroy()
     }
 
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity(), PushSdkListener {
     // ---- Helpers -----------------------------------------------------------
 
     private fun updateStatus() {
-        val initialized = PushSdk.isInitialized()
+        val initialized = PushPanel.isInitialized()
         statusText.text = if (initialized) {
             "SDK status: initialized ✓ (package=${packageName})"
         } else {

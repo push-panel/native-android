@@ -38,7 +38,7 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
 
     // PushPanel SDK — change the version to try a newer release
-    implementation("ir.push-panel:push-sdk:1.7.2")
+    implementation("ir.push-panel:push-sdk:1.8.3")
 
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-messaging-ktx")
