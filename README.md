@@ -50,18 +50,41 @@ PushPanel.init(this) // در Application.onCreate()؛ برای دیباگ: PushP
 ```java
 PushPanel.init(this); // در Application.onCreate()
 ```
-```
 
 ## ۴. دسترسی‌ها و منیفست
 
-`app/src/main/AndroidManifest.xml` — بعد از `<manifest>`:
+`app/src/main/AndroidManifest.xml` — مستقیم داخل تگ `<manifest>` و قبل از `<application>`:
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
 
-## ۵. فایربیس (برای دریافت واقعی پوش — اجباری)
+## ۵. دسترسی ران‌تایم نوتیفیکیشن (اندروید ۱۳ به بالا)
+
+از اندروید ۱۳ (`TIRAMISU`) فقط داشتن دسترسی در مانیفست کافی نیست — باید در اکتیویتی (مثلاً `MainActivity.onCreate`) از کاربر گرفته شود، وگرنه نوتیفیکیشن نمایش داده نمی‌شود:
+
+کاتلین:
+
+```kotlin
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 100)
+    }
+}
+```
+
+جاوا:
+
+```java
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 100);
+    }
+}
+```
+
+## ۶. فایربیس (برای دریافت واقعی پوش — اجباری)
 
 بدون این مرحله `google-services.json` نادیده گرفته می‌شود، توکن FCM ساخته نمی‌شود و پوشی دریافت نمی‌کنی (بیلد موفق می‌شود ولی خبری از پوش نیست).
 
@@ -94,7 +117,7 @@ plugins {
 app/build/generated/res/google-services/debug/values/values.xml
 ```
 
-## ۶. بیلد
+## ۷. بیلد
 
 ```powershell
 ./gradlew assembleDebug
