@@ -41,89 +41,15 @@ dependencies {
 
 ## ۲. مقداردهی اولیه — کاتلین
 
-`SampleApplication.kt` — یک خط کافیست:
-
 ```kotlin
-PushPanel.init(this, true) // دیباگ فعال؛ برای غیرفعال: PushPanel.init(this)
-```
-
-`MainActivity.kt` — پیاده‌سازی `PushSdkListener`، ثبت لیسنر، نمایش وضعیت و درخواست دسترسی نوتیفیکیشن (اندروید ۱۳+):
-
-```kotlin
-package com.pushpanel.test
-
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import ir.pushpanel.sdk.PushPanel
-import ir.pushpanel.sdk.PushPayload
-import ir.pushpanel.sdk.PushSdkListener
-
-class MainActivity : AppCompatActivity(), PushSdkListener {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        requestNotificationPermission()
-        PushPanel.addListener(this)
-    }
-
-    override fun onDestroy() {
-        PushPanel.removeListener(this)
-        super.onDestroy()
-    }
-
-    override fun onMessageReceived(payload: PushPayload) { /* ... */ }
-    override fun onSilentMessage(payload: PushPayload) { /* ... */ }
-    override fun onTokenRefreshed(token: String) { /* ... */ }
-
-    private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 100)
-            }
-        }
-    }
-}
+PushPanel.init(this) // در Application.onCreate()؛ برای دیباگ: PushPanel.init(this, true)
 ```
 
 ## ۳. مین‌اکتیویتی — جاوا
 
 ```java
-package com.pushpanel.test;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import ir.pushpanel.sdk.PushPanel;
-import ir.pushpanel.sdk.PushSdkListener;
-
-public class MainActivity extends AppCompatActivity implements PushSdkListener {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        requestNotificationPermission();
-        PushPanel.addListener(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        PushPanel.removeListener(this);
-        super.onDestroy();
-    }
-
-    private void requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 100);
-            }
-        }
-    }
-}
+PushPanel.init(this); // در Application.onCreate()
+```
 ```
 
 ## ۴. دسترسی‌ها و منیفست
